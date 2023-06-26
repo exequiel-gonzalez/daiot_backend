@@ -33,6 +33,9 @@ app.use(function (req, res, next) {
 
      //MQTT messages handler
   MqttClient.handleMessages = handleMessages; 
+  //Here the devices are loaded from the database
+  let deviceList = await FirebaseFunctions.getDevicesList();    
+  Devices.setDevicesList(deviceList);
   });
   
 
@@ -43,11 +46,7 @@ app.use(function (req, res, next) {
       if (!Object.keys(Devices.getDevicesList()).includes(id)) {
         Devices.addDevice({ 
           lastSeen: Date.now(),
-          state: true,
-          isConfigured: false,
-          name: '',
-          description: '',
-          location: '',
+          state: true,     
           users: {},
           id: id,
         })
@@ -66,21 +65,18 @@ app.use(function (req, res, next) {
         const id = incomingTopic.split('/')[1];
         if (message.toString().includes('|') && Object.keys(Devices.getDevicesList()).includes(id)) {
           console.log(id);
-          // const data = message.toString().split('|');
-          // const object = {
-          //   outputs: data[0].split(':')[1].replace(/^[ ]+/g, '').split('').reverse().join(''),
-          //   inputs: data[1].split(':')[1].replace(/^[ ]+/g, '').split('').reverse().join(''),
-          //   humidity: data[2].split(':')[1].replace(/^[ ]+/g, ''),
-          //   temp: data[3].split(':')[1].replace(/^[ ]+/g, ''),
-          //   flow: data[4].split(':')[1].replace(/^[ ]+/g, ''),
-          //   pressureL: data[5].split(':')[1].replace(/^[ ]+/g, ''),
-          // };
-          // FirebaseFunctions.saveMessageDatabase(id, object);
+          const data = message.toString().split('|');
+          const object = {
+            temperature: data[0],
+            pressure: data[1],
+          };
+          FirebaseFunctions.saveMessageDatabase(id, object);
           // deviceList[id].data = { ...deviceList[id].data, ...object };
         } else {
           console.log('message not valid, id: ', id);
         }
       } catch (e) {
+        console.log(e);
         console.log('error with message or topic: ', message.toString(), incomingTopic);
       }
     } else if (incomingTopic.includes(process.env.TOPIC_ALARM)) {
