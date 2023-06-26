@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  broker:
+    container_name: "mosquitto-broker"
+    image: eclipse-mosquitto:2.0.11
+    restart: always
+    volumes:
+      - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./logs/mosquitto.log:/mosquitto/log/mosquitto.log
+    ports:
+      - 1883:1883
+      - 9001:9001
+      - 8883:8883
+  backend:
+    container_name: "backend"
+    build: ./backend
+    restart: always
+    ports:
+      - 3000:3000
+    depends_on:
+      - broker
+    volumes:
+      - ./backend:/usr/src/app
