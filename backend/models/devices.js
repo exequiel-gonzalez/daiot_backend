@@ -29,7 +29,8 @@ class Devices{
     }
     setDevicesList(list){
         this.#devices = list;
-    }    
+    } 
+
 }
 
 export default new Devices();

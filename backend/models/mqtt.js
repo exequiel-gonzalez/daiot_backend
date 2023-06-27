@@ -7,7 +7,7 @@ const options = {
 
 const mqttUrl = 'mqtt://' + process.env.MQTT_URL + ':' + process.env.MQTT_PORT || 'mqtt://localhost:1883';
 
-const topics = [`${process.env.TOPIC_DATA}/#`, `${process.env.TOPIC_HELLO}/#`, `${process.env.TOPIC_ALARM}/#`];
+const topics = [`${process.env.TOPIC_DATA}/#`, `${process.env.TOPIC_HELLO}/#`];
 
 
 class MqttClient {

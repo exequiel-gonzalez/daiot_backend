@@ -107,6 +107,14 @@ class FirebaseFunctions {
       return false;
     }
   }
+
+  async getDeviceLogs(id) {
+    const response = await this.#database.ref(`/data/${id}`).orderByChild('serverTimestamp').limitToLast(100).once('value');
+    if (response.exists()) {
+      return response.val();
+    }
+    return {};
+  }
 };
 
 export default new FirebaseFunctions();
